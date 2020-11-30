@@ -28,12 +28,17 @@ export class ReadMeWriter implements IReadMeWriter {
   //#endregion
 
   //#region private methods
-  private buildReadMe(rawSchemas: Collections.Dictionary<string, Schema>): Array<string> {
+  private buildReadMe(schemas: Collections.Dictionary<string, Schema>): Array<string> {
+    const versionNote = schemas.values().length > 0 ?
+      `The schemas linked above follow the JSON Schema Spec version: \`${schemas.values()[0].$schema}\`` :
+      'No schemas found';
     return [
       '## Top level',
-      ...this.buildTopLevel(rawSchemas, (s) => !s.isAbstract),
+      ...this.buildTopLevel(schemas, (s) => !s.isAbstract),
       '## Definitions',
-      ...this.buildTopLevel(rawSchemas, (s) => s.isAbstract),
+      ...this.buildTopLevel(schemas, (s) => s.isAbstract),
+      '## Version note',
+      versionNote
     ];
   }
 
