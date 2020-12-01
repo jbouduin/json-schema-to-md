@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { Schema } from "../schema/schema";
-import { ESchemaAttribute } from "../schema/schema-attribute-enum";
+import { ESchemaAttribute } from "../schema/schema-attribute.enum";
+import { IHeaderAttributeFormatter } from "./header-attribute-formatter";
 import { IMarkDownWriter } from "./markdown-writer";
 
 export interface ISchemaWriter {
@@ -10,11 +11,13 @@ export interface ISchemaWriter {
 export class SchemaWriter implements ISchemaWriter {
 
   //#region private properties
+  private headerAttributeFormatter: IHeaderAttributeFormatter;
   private writer: IMarkDownWriter;
   //#endregion
 
   //#region constructor
-  public constructor(writer: IMarkDownWriter) {
+  public constructor(writer: IMarkDownWriter, headerAttributeFormatter: IHeaderAttributeFormatter) {
+    this.headerAttributeFormatter = headerAttributeFormatter;
     this.writer = writer;
   }
   //#endregion
@@ -34,16 +37,17 @@ export class SchemaWriter implements ISchemaWriter {
       schema.property(ESchemaAttribute.ID) as string,
       '```',
       schema.property(ESchemaAttribute.DESCRIPTION) as string,
-      ...this.getAttributes(),
+      ...this.getAttributes(schema),
       ...this.getDefinitions(schema),
       ...this.getProperties(schema)
     ];
   }
 
-  private getAttributes(): Array<string> {
-    const result = new Array<string>();
-    result.push('## Schema attributes')
-    return result;
+  private getAttributes(schema: Schema): Array<string> {
+    return [
+      '## Schema attributes',
+      ...this.headerAttributeFormatter.getAttributeList(schema, undefined)
+    ];
   }
 
   private getDefinitions(schema: Schema): Array<string> {

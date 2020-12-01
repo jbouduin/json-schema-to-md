@@ -5,7 +5,7 @@ import path from 'path';
 import * as Collections from 'typescript-collections';
 
 import { Schema } from './schema';
-import { ESchemaAttribute } from './schema-attribute-enum';
+import { ESchemaAttribute } from './schema-attribute.enum';
 
 export interface ISchemaLoader {
   load(): Collections.Dictionary<string, Schema>;

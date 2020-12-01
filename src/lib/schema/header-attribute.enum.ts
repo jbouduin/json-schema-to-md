@@ -1,6 +1,7 @@
-export enum EHeaderProperty {
+export enum EHeaderAttribute {
   ABSTRACT = 'abstract',
-  ADDITIONAL = 'additionalProperties',
+  ADDITIONAL_ITEMS = 'additionalItems',
+  ADDITIONAL_PROPERTIES = 'additionalProperties',
   CUSTOM = 'add',
   EXTENSIBLE = 'extensible',
   IDENTIFIABLE = 'identifiable',

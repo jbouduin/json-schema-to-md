@@ -1,11 +1,12 @@
 import fs from 'fs';
 import nodepath from 'path';
-import { ISchemaLoader, SchemaLoader } from './schema/schema-loader';
 import yargs from 'yargs';
+import { HeaderAttributeFormatter } from './markdown/header-attribute-formatter';
 import { IMarkDownWriter, MarkDownWriter } from './markdown/markdown-writer';
 import { ReadMeWriter } from './markdown/readme-writer';
 import { ISchemaWriter, SchemaWriter } from './markdown/schema-writer';
-import { ESchemaAttribute } from './schema/schema-attribute-enum';
+import { ESchemaAttribute } from './schema/schema-attribute.enum';
+import { ISchemaLoader, SchemaLoader } from './schema/schema-loader';
 
 export class Main {
 
@@ -60,8 +61,7 @@ export class Main {
     console.log('=======================================================================');
     const markDownWriter = new MarkDownWriter(argv.o || '.') as IMarkDownWriter;
     new ReadMeWriter(markDownWriter).write(rawSchemas);
-
-    const schemaWriter = new SchemaWriter(markDownWriter) as ISchemaWriter;
+    const schemaWriter = new SchemaWriter(markDownWriter, new HeaderAttributeFormatter()) as ISchemaWriter;
     rawSchemas.values().forEach(schema => schemaWriter.write(schema));
   }
   //#endregion

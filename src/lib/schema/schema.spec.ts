@@ -1,4 +1,3 @@
-import { HeaderPropertiesList } from "./header-properties/header-properties-list";
 import { Schema } from "./schema"
 
 describe.each([
@@ -12,7 +11,6 @@ describe.each([
   test('directory set', () => expect(schema.directory).toEqual(dir));
   test('slug set', () => expect(schema.slug).toEqual(slug));
   test('abstract', () => expect(schema.abstract).toEqual(abstract));
-  test('headerPropertylist instantiated', () => expect(schema.headerPropertiesList).toBeInstanceOf(HeaderPropertiesList));
 })
 
 // describe.each([
