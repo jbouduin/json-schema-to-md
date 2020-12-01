@@ -2,7 +2,7 @@
 
 Documenting and validating complex JSON Schemas can be hard. This tool makes it easier by providing a number of scripts that can turn JSON Schema files into readable Markdown documentation that is ready for consumption on GitHub or Azure DevOps.
 
-[![Travis (.org)](https://img.shields.io/travis/jbouduin/json-schema-to-md)](https://travis-ci.org/github/jbouduin/holiday)
+[![Travis (.com)](https://img.shields.io/travis/jbouduin/json-schema-to-md)](https://travis-ci.com/github/jbouduin/json-schema-to-md)
 [![Coverage Status](https://coveralls.io/repos/github/jbouduin/json-schema-to-md/badge.svg?branch=master)](https://coveralls.io/github/jbouduin/json-schema-to-md?branch=master)
 [![Open issues](https://img.shields.io/github/issues/jbouduin/holiday)](https://github.com/jbouduin/json-schema-to-md/issues)
 [![license](https://img.shields.io/github/license/jbouduin/holiday)](/LICENSE)
