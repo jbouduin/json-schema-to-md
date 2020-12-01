@@ -1,9 +1,9 @@
-export type SchemaType = 'object' | 'string' | 'number' | 'integer' | 'array' | 'boolean' | 'null';
+export type schemaType = 'object' | 'string' | 'number' | 'integer' | 'array' | 'boolean' | 'null';
 
-export abstract class BaseSchema {
+export abstract class XBaseSchema {
   //#region public properties
   public $id!: string;
-  public type!: SchemaType | Array<SchemaType>;
+  public type!: schemaType | Array<schemaType>;
   public title!: string;
   public description!: string;
   //#endregion

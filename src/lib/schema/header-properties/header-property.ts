@@ -1,3 +1,4 @@
+
 export abstract class HeaderProperty<T> {
 
   //#region public readonly properties

@@ -15,10 +15,93 @@
     "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
   "rules": {
+    "comma-spacing": "off",
+    "@typescript-eslint/comma-spacing": [
+      "error"
+    ],
+    "@typescript-eslint/explicit-member-accessibility": [
+      "error"
+    ],
     "@typescript-eslint/array-type": [
-      2,
+      "error",
       {
         "default": "generic"
+      }
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": [ "default" ],
+        "format": [
+          "strictCamelCase"
+        ],
+        "trailingUnderscore": "forbid",
+        "leadingUnderscore": "forbid"
+      },
+      {
+        "selector": [
+          "property"
+        ],
+        "modifiers": [ "private" ],
+        "format": [
+          "strictCamelCase"
+        ],
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": [
+          "property"
+        ],
+        "modifiers": [
+          "private",
+          "static",
+          "readonly"
+        ],
+        "format": [
+          "UPPER_CASE"
+        ],
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": "parameter",
+        "format": [
+          "strictCamelCase"
+        ],
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": "typeParameter",
+        "format": [
+          "StrictPascalCase"
+        ]
+      },
+      {
+        "selector": "interface",
+        "format": [
+          "PascalCase"
+        ],
+        "prefix": [
+          "I"
+        ]
+      },
+      {
+        "selector": "class",
+        "format": [
+          "PascalCase"
+        ]
+      },
+      {
+        "selector": "enum",
+        "format": [
+          "PascalCase"
+        ],
+        "prefix": [ "E"]
+      },
+      {
+        "selector": "enumMember",
+        "format": [
+          "UPPER_CASE"
+        ]
       }
     ]
   }

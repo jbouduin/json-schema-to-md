@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import * as Collections from 'typescript-collections';
 import { Schema } from '../schema/schema';
+import { ESchemaAttribute } from '../schema/schema-attribute-enum';
 import { IMarkDownWriter } from './markdown-writer';
 
 export interface IReadMeWriter {
@@ -23,20 +25,20 @@ export class ReadMeWriter implements IReadMeWriter {
     console.log('building readme');
 
     const readme = this.buildReadMe(rawSchemas);
-    this.writer.writeFile('README.md', readme )
+    this.writer.writeFile('README.md', readme)
   }
   //#endregion
 
   //#region private methods
   private buildReadMe(schemas: Collections.Dictionary<string, Schema>): Array<string> {
     const versionNote = schemas.values().length > 0 ?
-      `The schemas linked above follow the JSON Schema Spec version: \`${schemas.values()[0].$schema}\`` :
+      `The schemas linked above follow the JSON Schema Spec version: \`${schemas.values()[0].property(ESchemaAttribute.SCHEMA)}\`` :
       'No schemas found';
     return [
       '## Top level',
-      ...this.buildTopLevel(schemas, (s) => !s.isAbstract),
+      ...this.buildTopLevel(schemas, (s) => !s.abstract),
       '## Definitions',
-      ...this.buildTopLevel(schemas, (s) => s.isAbstract),
+      ...this.buildTopLevel(schemas, (s) => s.abstract),
       '## Version note',
       versionNote
     ];
@@ -47,7 +49,7 @@ export class ReadMeWriter implements IReadMeWriter {
     rawSchemas.keys().forEach(key => {
       const value = rawSchemas.getValue(key);
       if (value && filter(value)) {
-        result.push(`- [${value.title}](${value.directory}/${value.slug}) \`${value.$id}\``);
+        result.push(`- [${value.property(ESchemaAttribute.TITLE)}](${value.directory}/${value.slug}) \`${value.property(ESchemaAttribute.ID)}\``);
       }
     });
     return result;
