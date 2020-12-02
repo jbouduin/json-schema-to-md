@@ -22,21 +22,12 @@ export class HeaderAttributeFormatter implements IHeaderAttributeFormatter {
     const result = new Array<string>();
     const values = this.getAttributeValues(schema, attributes);
     result.push(`| ${[...values.keys()].join(' | ')} |`);
-    result.push(`| ${[...values.keys()].map(_key => '---').join(' | ')} |`);
+    result.push(`| ${[...values.keys()].map( () => '---').join(' | ')} |`);
     result.push(`| ${[...values.values()].join(' | ')} |`);
     return result;
   }
   //#endregion
 
-  //   // {
-  //   //   name: 'restrictions',
-  //   //     title: i18n`Access Restrictions`,
-  //   //       readOnlylabel: i18n`Read only`,
-  //   //         writeOnlylabel: i18n`Write only`,
-  //   //           secretlabel: i18n`cannot be read or written`,
-  //   //             undefinedlabel: i18n`none`,
-  //   // },
-  //   // {
   //   //   name: 'definedin',
   //   //     title: i18n`Defined In`,
   //   //       undefinedlabel: i18n`Unknown definition`,
@@ -148,12 +139,24 @@ export class HeaderAttributeFormatter implements IHeaderAttributeFormatter {
           // TODO this can only be implemented after traversing the schema
           break;
         }
+        case EHeaderAttribute.READ_ONLY: {
+          label = 'Read-only';
+          const value = schema.property(ESchemaAttribute.READ_ONLY) as boolean;
+          stringValue = this.getBooleanAttributeText(value);
+          break;
+        }
         case EHeaderAttribute.STATUS: {
           label = 'Status';
           const value = schema.property(ESchemaAttribute.DEPRECATED) as boolean === true ?
             'deprecated' :
             schema.property(ESchemaAttribute.STATUS) as string;
           stringValue = this.getStatusAttributeText(value);
+          break;
+        }
+        case EHeaderAttribute.WRITE_ONLY: {
+          label = 'Write-only';
+          const value = schema.property(ESchemaAttribute.WRITE_ONLY) as boolean;
+          stringValue = this.getBooleanAttributeText(value);
           break;
         }
       }

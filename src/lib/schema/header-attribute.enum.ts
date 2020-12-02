@@ -5,5 +5,7 @@ export enum EHeaderAttribute {
   CUSTOM = 'add',
   EXTENSIBLE = 'extensible',
   IDENTIFIABLE = 'identifiable',
-  STATUS = 'status'
+  READ_ONLY = 'read-only',
+  STATUS = 'status',
+  WRITE_ONLY = 'write-only'
 }

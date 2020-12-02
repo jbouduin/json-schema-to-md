@@ -7,7 +7,7 @@ describe('general tests', () => {
   test('all header props', () => {
     const schema = new Schema('dir', 'slug', '{}');
     const headerAttributes = new HeaderAttributeFormatter().getAttributeList(schema, undefined);
-    expect(headerAttributes.length).toEqual(5);
+    expect(headerAttributes.length).toEqual(7);
   });
   test('not supported yet: \'Custom\'', () => {
     const schema = new Schema('dir', 'slug', '{}');
@@ -56,7 +56,9 @@ describe.each([
   [EHeaderAttribute.ADDITIONAL_ITEMS, '- **Additional items**: Undefined'],
   [EHeaderAttribute.ADDITIONAL_PROPERTIES, '- **Additional properties**: Undefined'],
   [EHeaderAttribute.EXTENSIBLE, '- **Extensible**: Undefined'],
-  [EHeaderAttribute.STATUS, '- **Status**: Unknown']
+  [EHeaderAttribute.READ_ONLY, '- **Read-only**: Undefined'],
+  [EHeaderAttribute.STATUS, '- **Status**: Unknown'],
+  [EHeaderAttribute.WRITE_ONLY, '- **Write-only**: Undefined']
 ])('Single header property', (value: EHeaderAttribute, expected: string) => {
   const schema = new Schema('dir', 'slug', '{}');
   const headerAttributes = new HeaderAttributeFormatter().getAttributeList(schema, value);

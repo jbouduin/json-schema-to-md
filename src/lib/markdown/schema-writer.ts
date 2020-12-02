@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { EHOSTUNREACH } from "constants";
 import { EHeaderAttribute } from "../schema/header-attribute.enum";
 import { Schema } from "../schema/schema";
 import { ESchemaAttribute } from "../schema/schema-attribute.enum";
@@ -50,7 +49,14 @@ export class SchemaWriter implements ISchemaWriter {
       '## Schema attributes',
       ...this.headerAttributeFormatter.getHorizontalAttributeTable(
         schema,
-        [EHeaderAttribute.ABSTRACT, EHeaderAttribute.STATUS, EHeaderAttribute.EXTENSIBLE, EHeaderAttribute.ADDITIONAL_PROPERTIES])
+        [
+          EHeaderAttribute.ABSTRACT,
+          EHeaderAttribute.STATUS,
+          EHeaderAttribute.EXTENSIBLE,
+          EHeaderAttribute.ADDITIONAL_PROPERTIES,
+          EHeaderAttribute.READ_ONLY,
+          EHeaderAttribute.WRITE_ONLY
+        ])
     ];
   }
 
