@@ -1,6 +1,7 @@
 export enum ESchemaAttribute {
   ADDITIONAL_ITEMS = 'additionalItems',
   ADDITIONAL_PROPERTIES = 'additionalProperties',
+  DEFAULT = 'default',
   DEFINITIONS = 'definitions',
   DEPRECATED = 'deprecated',
   DESCRIPTION = 'description',

@@ -39,6 +39,7 @@ export class SchemaWriter implements ISchemaWriter {
       '```',
       schema.property(ESchemaAttribute.DESCRIPTION) as string,
       ...this.getAttributes(schema),
+      ...this.getDefault(schema),
       ...this.getDefinitions(schema),
       ...this.getProperties(schema)
     ];
@@ -68,6 +69,20 @@ export class SchemaWriter implements ISchemaWriter {
     return result;
   }
 
+  private getDefault(schema: Schema): Array<string> {
+
+    if (schema.property(ESchemaAttribute.DEFAULT)){
+      return [
+        '## Default',
+        '```json',
+        JSON.stringify(schema.property(ESchemaAttribute.DEFAULT), undefined, 2),
+        '```',
+      ];
+    } else {
+      return [];
+    }
+
+  }
   private getProperties(schema: Schema): Array<string> {
     const result = new Array<string>();
     if (schema.property(ESchemaAttribute.PROPERTIES)) {
