@@ -40,6 +40,7 @@ export class SchemaWriter implements ISchemaWriter {
       schema.property(ESchemaAttribute.DESCRIPTION) as string,
       ...this.getAttributes(schema),
       ...this.getDefault(schema),
+      ...this.getExamples(schema),
       ...this.getDefinitions(schema),
       ...this.getProperties(schema)
     ];
@@ -70,7 +71,6 @@ export class SchemaWriter implements ISchemaWriter {
   }
 
   private getDefault(schema: Schema): Array<string> {
-
     if (schema.property(ESchemaAttribute.DEFAULT)){
       return [
         '## Default',
@@ -81,14 +81,26 @@ export class SchemaWriter implements ISchemaWriter {
     } else {
       return [];
     }
-
   }
+
   private getProperties(schema: Schema): Array<string> {
     const result = new Array<string>();
     if (schema.property(ESchemaAttribute.PROPERTIES)) {
       result.push('## Properties');
     }
     return result;
+  }
+
+  private getExamples(schema: Schema): Array<string> {
+    const examples = schema.property(ESchemaAttribute.EXAMPLES) as Array<unknown>;
+    if (examples) {
+      const result = new Array<string>();
+      result.push('## Examples');
+      examples.forEach(example => result.push('```json', JSON.stringify(example, undefined, 2), '```'));
+      return result;
+    } else {
+      return [];
+    }
   }
   //#endregion
 }

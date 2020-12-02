@@ -5,6 +5,7 @@ export enum ESchemaAttribute {
   DEFINITIONS = 'definitions',
   DEPRECATED = 'deprecated',
   DESCRIPTION = 'description',
+  EXAMPLES = 'examples',
   EXTENSIBLE = 'meta:extensible',
   ID = '$id',
   PROPERTIES = 'properties',
