@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
+import { EHOSTUNREACH } from "constants";
+import { EHeaderAttribute } from "../schema/header-attribute.enum";
 import { Schema } from "../schema/schema";
 import { ESchemaAttribute } from "../schema/schema-attribute.enum";
 import { IHeaderAttributeFormatter } from "./header-attribute-formatter";
@@ -46,7 +48,9 @@ export class SchemaWriter implements ISchemaWriter {
   private getAttributes(schema: Schema): Array<string> {
     return [
       '## Schema attributes',
-      ...this.headerAttributeFormatter.getAttributeList(schema, undefined)
+      ...this.headerAttributeFormatter.getHorizontalAttributeTable(
+        schema,
+        [EHeaderAttribute.ABSTRACT, EHeaderAttribute.STATUS, EHeaderAttribute.EXTENSIBLE, EHeaderAttribute.ADDITIONAL_PROPERTIES])
     ];
   }
 

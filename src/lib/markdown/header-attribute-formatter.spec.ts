@@ -24,7 +24,29 @@ describe('general tests', () => {
     const headerAttributes = new HeaderAttributeFormatter().getAttributeList(schema, [EHeaderAttribute.ABSTRACT]);
     expect(headerAttributes.length).toEqual(1);
     expect(headerAttributes[0]).toEqual('- **Abstract**: Yes');
-  })
+  });
+  test('properties come in the right order', () => {
+    const schema = new Schema('dir', 'slug', '{}');
+    const headerAttributes = new HeaderAttributeFormatter().getAttributeList(
+      schema,
+      [EHeaderAttribute.ABSTRACT, EHeaderAttribute.STATUS, EHeaderAttribute.EXTENSIBLE, EHeaderAttribute.ADDITIONAL_ITEMS]);
+
+    expect(headerAttributes.length).toEqual(4);
+    expect(headerAttributes[0]).toEqual('- **Abstract**: Yes');
+    expect(headerAttributes[1]).toEqual('- **Status**: Unknown');
+    expect(headerAttributes[2]).toEqual('- **Extensible**: Undefined');
+    expect(headerAttributes[3]).toEqual('- **Additional items**: Undefined');
+  });
+  test('properties as horizontal table', () => {
+    const schema = new Schema('dir', 'slug', '{}');
+    const headerAttributes = new HeaderAttributeFormatter().getHorizontalAttributeTable(
+      schema,
+      [EHeaderAttribute.ABSTRACT, EHeaderAttribute.STATUS, EHeaderAttribute.EXTENSIBLE, EHeaderAttribute.ADDITIONAL_PROPERTIES]);
+    expect(headerAttributes.length).toEqual(3);
+    expect(headerAttributes[0]).toEqual('| Abstract | Status | Extensible | Additional properties |');
+    expect(headerAttributes[1]).toEqual('| --- | --- | --- | --- |');
+    expect(headerAttributes[2]).toEqual('| Yes | Unknown | Undefined | Undefined |');
+  });
 });
 //#endregion
 
