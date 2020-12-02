@@ -92,15 +92,21 @@ export class SchemaWriter implements ISchemaWriter {
   }
 
   private getExamples(schema: Schema): Array<string> {
-    const examples = schema.property(ESchemaAttribute.EXAMPLES) as Array<unknown>;
-    if (examples) {
-      const result = new Array<string>();
-      result.push('## Examples');
-      examples.forEach(example => result.push('```json', JSON.stringify(example, undefined, 2), '```'));
-      return result;
+    if (schema.property(ESchemaAttribute.EXAMPLES)) {
+      const processed = (schema.property(ESchemaAttribute.EXAMPLES) as Array<unknown>)
+        .map(example => [
+          '```json',
+          JSON.stringify(example, undefined, 2),
+          '```'
+        ]);
+      return [
+        '## Examples',
+        ...(new Array<string>().concat(...processed))
+      ];
     } else {
       return [];
     }
+
   }
   //#endregion
 }
