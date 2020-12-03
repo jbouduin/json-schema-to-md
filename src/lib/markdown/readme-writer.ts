@@ -33,14 +33,14 @@ export class ReadMeWriter implements IReadMeWriter {
     const versionNote = schemas.values().length > 0 ?
       `The schemas linked above follow the JSON Schema Spec version: \`${schemas.values()[0].property(ESchemaAttribute.SCHEMA)}\`` :
       'No schemas found';
-    return [
+    return new Array<string>(
       '## Top level',
       ...this.buildTopLevel(schemas, (s) => !s.abstract),
       '## Definitions',
       ...this.buildTopLevel(schemas, (s) => s.abstract),
       '## Version note',
       versionNote
-    ];
+    );
   }
 
   private buildTopLevel(rawSchemas: Collections.Dictionary<string, Schema>, filter: (schema: Schema) => boolean): Array<string> {

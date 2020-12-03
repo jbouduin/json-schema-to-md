@@ -1,10 +1,12 @@
 import fs from 'fs';
 import nodepath from 'path';
 import yargs from 'yargs';
-import { HeaderAttributeFormatter } from './markdown/header-attribute-formatter';
-import { IMarkDownWriter, MarkDownWriter } from './markdown/markdown-writer';
+import { AttributeFormatter } from './markdown/attribute-formatter';
+import { MarkDownWriter } from './markdown/markdown-writer';
+import { PropertyFormatter } from './markdown/property-formatter';
 import { ReadMeWriter } from './markdown/readme-writer';
-import { ISchemaWriter, SchemaWriter } from './markdown/schema-writer';
+import { SchemaFormatter } from './markdown/schema-formatter';
+import { SchemaWriter } from './markdown/schema-writer';
 import { ESchemaAttribute } from './schema/schema-attribute.enum';
 import { ISchemaLoader, SchemaLoader } from './schema/schema-loader';
 
@@ -59,9 +61,14 @@ export class Main {
     });
 
     console.log('=======================================================================');
-    const markDownWriter = new MarkDownWriter(argv.o || '.') as IMarkDownWriter;
+    const markDownWriter = new MarkDownWriter(argv.o || '.');
     new ReadMeWriter(markDownWriter).write(rawSchemas);
-    const schemaWriter = new SchemaWriter(markDownWriter, new HeaderAttributeFormatter()) as ISchemaWriter;
+    const schemaWriter = new SchemaWriter(
+      markDownWriter,
+      new SchemaFormatter(),
+      new AttributeFormatter(),
+      new PropertyFormatter()
+    );
     rawSchemas.values().forEach(schema => schemaWriter.write(schema));
   }
   //#endregion

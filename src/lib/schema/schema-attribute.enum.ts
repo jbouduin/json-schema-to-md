@@ -8,11 +8,18 @@ export enum ESchemaAttribute {
   EXAMPLES = 'examples',
   EXTENSIBLE = 'meta:extensible',
   ID = '$id',
+  // Pseudo attributes are attributes that are getters on the schema and not keywords of jsonschema
+  PSEUDO_ABSTRACT = 'abstract',
+  PSEUDO_CUSTOM = 'custom',
+  PSEUDO_IDENTIFIABLE = 'identifiable',
+  PSEUDO_IS_NULLABLE = 'isNullable',
+  PSEUDO_IS_REQUIRED = 'isRequired',
+  PSEUDO_STATUS = 'meta:status',
   PROPERTIES = 'properties',
   REQUIRED = 'required',
   READ_ONLY = 'readOnly',
   SCHEMA = '$schema',
-  STATUS = 'meta:status',
   TITLE = 'title',
+  TYPE = 'type',
   WRITE_ONLY = 'writeOnly'
 }

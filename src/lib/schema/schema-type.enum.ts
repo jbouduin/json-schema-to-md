@@ -1,6 +1,7 @@
-export enum ESchemaTypeEnum {
+export enum ESchemaType {
   OBJECT = 'object',
   STRING = 'string',
+  NULL = 'null',
   NUMBER = 'number',
   INTEGER = 'integer',
   ARRAY = 'array',

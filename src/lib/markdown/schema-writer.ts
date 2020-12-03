@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { EHeaderAttribute } from "../schema/header-attribute.enum";
 import { Schema } from "../schema/schema";
 import { ESchemaAttribute } from "../schema/schema-attribute.enum";
-import { IHeaderAttributeFormatter } from "./header-attribute-formatter";
+import { IAttributeFormatter } from "./attribute-formatter";
 import { IMarkDownWriter } from "./markdown-writer";
+import { IPropertyFormatter } from "./property-formatter";
+import { ISchemaFormatter } from "./schema-formatter";
 
 export interface ISchemaWriter {
   write(schema: Schema): void;
@@ -12,14 +13,19 @@ export interface ISchemaWriter {
 export class SchemaWriter implements ISchemaWriter {
 
   //#region private properties
-  private headerAttributeFormatter: IHeaderAttributeFormatter;
-  private writer: IMarkDownWriter;
+  private readonly attributeFormatter: IAttributeFormatter;
+  private readonly propertyFormatter: IPropertyFormatter;
+  private readonly schemaFormatter: ISchemaFormatter;
+  private readonly writer: IMarkDownWriter;
+
   //#endregion
 
   //#region constructor
-  public constructor(writer: IMarkDownWriter, headerAttributeFormatter: IHeaderAttributeFormatter) {
-    this.headerAttributeFormatter = headerAttributeFormatter;
+  public constructor(writer: IMarkDownWriter, schemaFormatter: ISchemaFormatter, attributeFormatter: IAttributeFormatter, propertyFormatter: IPropertyFormatter) {
+    this.attributeFormatter = attributeFormatter;
     this.writer = writer;
+    this.propertyFormatter = propertyFormatter;
+    this.schemaFormatter = schemaFormatter;
   }
   //#endregion
 
@@ -32,34 +38,34 @@ export class SchemaWriter implements ISchemaWriter {
 
   //#region private methods
   private buildMarkdown(schema: Schema): Array<string> {
-    return [
+    return new Array<string>(
       `# ${schema.property(ESchemaAttribute.TITLE)}`,
       '```txt',
       schema.property(ESchemaAttribute.ID) as string,
       '```',
       schema.property(ESchemaAttribute.DESCRIPTION) as string,
       ...this.getAttributes(schema),
-      ...this.getDefault(schema),
-      ...this.getExamples(schema),
+      ...this.schemaFormatter.getDefault(schema),
+      ...this.schemaFormatter.getExamples(schema),
       ...this.getDefinitions(schema),
       ...this.getProperties(schema)
-    ];
+    );
   }
 
   private getAttributes(schema: Schema): Array<string> {
-    return [
+    return new Array<string>(
       '## Schema attributes',
-      ...this.headerAttributeFormatter.getHorizontalAttributeTable(
+      ...this.attributeFormatter.getAttributeValuesAsHorizontalTable(
         schema,
         [
-          EHeaderAttribute.ABSTRACT,
-          EHeaderAttribute.STATUS,
-          EHeaderAttribute.EXTENSIBLE,
-          EHeaderAttribute.ADDITIONAL_PROPERTIES,
-          EHeaderAttribute.READ_ONLY,
-          EHeaderAttribute.WRITE_ONLY
+          ESchemaAttribute.PSEUDO_ABSTRACT,
+          ESchemaAttribute.PSEUDO_STATUS,
+          ESchemaAttribute.EXTENSIBLE,
+          ESchemaAttribute.ADDITIONAL_PROPERTIES,
+          ESchemaAttribute.READ_ONLY,
+          ESchemaAttribute.WRITE_ONLY
         ])
-    ];
+    );
   }
 
   private getDefinitions(schema: Schema): Array<string> {
@@ -70,43 +76,12 @@ export class SchemaWriter implements ISchemaWriter {
     return result;
   }
 
-  private getDefault(schema: Schema): Array<string> {
-    if (schema.property(ESchemaAttribute.DEFAULT)){
-      return [
-        '## Default',
-        '```json',
-        JSON.stringify(schema.property(ESchemaAttribute.DEFAULT), undefined, 2),
-        '```',
-      ];
-    } else {
-      return [];
-    }
-  }
-
   private getProperties(schema: Schema): Array<string> {
     const result = new Array<string>();
     if (schema.property(ESchemaAttribute.PROPERTIES)) {
       result.push('## Properties');
     }
     return result;
-  }
-
-  private getExamples(schema: Schema): Array<string> {
-    if (schema.property(ESchemaAttribute.EXAMPLES)) {
-      const processed = (schema.property(ESchemaAttribute.EXAMPLES) as Array<unknown>)
-        .map(example => [
-          '```json',
-          JSON.stringify(example, undefined, 2),
-          '```'
-        ]);
-      return [
-        '## Examples',
-        ...(new Array<string>().concat(...processed))
-      ];
-    } else {
-      return [];
-    }
-
   }
   //#endregion
 }
