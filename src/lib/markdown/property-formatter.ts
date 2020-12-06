@@ -11,6 +11,7 @@ export interface IPropertyFormatter {
   format(
     schemaFormatter: ISchemaFormatter,
     attributeFormatter: IAttributeFormatter,
+    toFormat: ESchemaAttribute.DEFINITIONS | ESchemaAttribute.PROPERTIES,
     schema: Schema): Array<string>;
 }
 
@@ -26,39 +27,63 @@ export class PropertyFormatter extends Formatter implements IPropertyFormatter {
   public format(
     schemaFormatter: ISchemaFormatter,
     attributeFormatter: IAttributeFormatter,
+    toFormat: ESchemaAttribute.DEFINITIONS | ESchemaAttribute.PROPERTIES,
     schema: Schema): Array<string> {
     return new Array<string>(
-      '## Properties',
-      ...this.propertyTable(attributeFormatter, schema),
-      ...this.propertyDetails(schemaFormatter, attributeFormatter, schema)
+      toFormat === ESchemaAttribute.DEFINITIONS ? '## Properties' : '## Definitions',
+      ...this.propertyTable(attributeFormatter, toFormat, schema),
+      ...this.propertyDetails(schemaFormatter, attributeFormatter, toFormat, schema)
     );
   }
 
-  private propertyTable(attributeFormatter: IAttributeFormatter, schema: Schema): Array<string> {
+  private propertyTable(
+    attributeFormatter: IAttributeFormatter,
+    toFormat: ESchemaAttribute.DEFINITIONS | ESchemaAttribute.PROPERTIES,
+    schema: Schema): Array<string> {
     const result = new Array<string>();
 
     result.push(
-      this.buildTableRow(['Property', 'Type', 'Required', 'Nullable']),
-      this.buildTableRow(['----', '----', '--------', '--------'])
+      this.buildTableRow(toFormat === ESchemaAttribute.PROPERTIES ?
+        ['Property', 'Type', 'Required', 'Nullable'] :
+        ['Property', 'Type', 'Nullable'] ),
+      this.buildTableRow(toFormat === ESchemaAttribute.PROPERTIES ?
+        ['----', '----', '--------', '--------'] :
+        ['----', '----',  '--------'])
     );
 
     schema.properties.forEach((propertySchema: Schema, propertyName: string) => {
       const propValues = attributeFormatter.getAttributeValues(propertySchema, [ESchemaAttribute.TYPE, ESchemaAttribute.PSEUDO_IS_NULLABLE]);
-      const dependentValues = attributeFormatter.getParentDependentPropertyAttributeValues(schema, propertyName, ESchemaAttribute.PSEUDO_IS_REQUIRED);
+      const dependentValues = toFormat === ESchemaAttribute.PROPERTIES ?
+        attributeFormatter.getParentDependentPropertyAttributeValues(schema, propertyName, ESchemaAttribute.PSEUDO_IS_REQUIRED) :
+        new Map<ESchemaAttribute, FormattedAttribute>();
 
-      result.push(
-        this.buildTableRow([
-          propertyName,
-          (propValues.get(ESchemaAttribute.TYPE) || this.emptyAttribute).value,
-          (dependentValues.get(ESchemaAttribute.PSEUDO_IS_REQUIRED) || this.emptyAttribute).value,
-          (propValues.get(ESchemaAttribute.PSEUDO_IS_NULLABLE) || this.emptyAttribute).value
-        ])
-      );
+      if (toFormat === ESchemaAttribute.PROPERTIES) {
+        result.push(
+          this.buildTableRow([
+            propertyName,
+            (propValues.get(ESchemaAttribute.TYPE) || this.emptyAttribute).value,
+            (dependentValues.get(ESchemaAttribute.PSEUDO_IS_REQUIRED) || this.emptyAttribute).value,
+            (propValues.get(ESchemaAttribute.PSEUDO_IS_NULLABLE) || this.emptyAttribute).value
+          ])
+        );
+      } else {
+        result.push(
+          this.buildTableRow([
+            propertyName,
+            (propValues.get(ESchemaAttribute.TYPE) || this.emptyAttribute).value,
+            (propValues.get(ESchemaAttribute.PSEUDO_IS_NULLABLE) || this.emptyAttribute).value
+          ])
+        );
+      }
     });
     return result;
   }
 
-  private propertyDetails(schemaFormatter: ISchemaFormatter, attributeFormatter: IAttributeFormatter, schema: Schema): Array<string> {
+  private propertyDetails(
+    schemaFormatter: ISchemaFormatter,
+    attributeFormatter: IAttributeFormatter,
+    toFormat: ESchemaAttribute.DEFINITIONS | ESchemaAttribute.PROPERTIES,
+    schema: Schema): Array<string> {
     const result = new Array<string>();
     schema.properties.forEach((propertySchema: Schema, propertyName: string) => {
 
@@ -66,9 +91,12 @@ export class PropertyFormatter extends Formatter implements IPropertyFormatter {
       if (propertySchema.property(ESchemaAttribute.DESCRIPTION)) {
         result.push(propertySchema.property(ESchemaAttribute.DESCRIPTION) as string);
       }
-      const propValues = new Array<FormattedAttribute>(
-        ...attributeFormatter.getAttributeValues(propertySchema, [ ESchemaAttribute.TYPE, ESchemaAttribute.PSEUDO_IS_NULLABLE]).values(),
-        ...attributeFormatter.getParentDependentPropertyAttributeValues(schema, propertyName, ESchemaAttribute.PSEUDO_IS_REQUIRED).values());
+      let propValues = new Array<FormattedAttribute>(
+        ...attributeFormatter.getAttributeValues(propertySchema, [ ESchemaAttribute.TYPE, ESchemaAttribute.PSEUDO_IS_NULLABLE]).values());
+      if (toFormat === ESchemaAttribute.PROPERTIES) {
+        propValues = propValues.concat(
+          ...attributeFormatter.getParentDependentPropertyAttributeValues(schema, propertyName, ESchemaAttribute.PSEUDO_IS_REQUIRED).values());
+      }
 
       result.push('#### Attributes');
       if (propertySchema.property(ESchemaAttribute.ID)) {

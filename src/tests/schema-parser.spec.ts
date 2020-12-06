@@ -14,7 +14,7 @@
 // });
 
 test('some test', () => {
-
+  console.log('test');
 });
 
 // test('second test', () => {

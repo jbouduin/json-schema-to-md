@@ -70,9 +70,7 @@ export class SchemaWriter implements ISchemaWriter {
 
   private getDefinitions(schema: Schema): Array<string> {
     if (schema.property(ESchemaAttribute.DEFINITIONS)) {
-      return new Array<string>(
-        '## Definitions'
-      );
+      return this.propertyFormatter.format(this.schemaFormatter, this.attributeFormatter, ESchemaAttribute.DEFINITIONS, schema);
     } else {
       return new Array<string>();
     }
@@ -80,7 +78,7 @@ export class SchemaWriter implements ISchemaWriter {
 
   private getProperties(schema: Schema): Array<string> {
     if (schema.property(ESchemaAttribute.PROPERTIES)) {
-      return this.propertyFormatter.format(this.schemaFormatter, this.attributeFormatter, schema);
+      return this.propertyFormatter.format(this.schemaFormatter, this.attributeFormatter, ESchemaAttribute.PROPERTIES, schema);
     } else {
       return new Array<string>();
     }
