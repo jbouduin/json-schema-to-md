@@ -60,7 +60,7 @@ export class PropertyFormatter extends Formatter implements IPropertyFormatter {
       if (toFormat === ESchemaAttribute.PROPERTIES) {
         result.push(
           this.buildTableRow([
-            propertyName,
+            `[${propertyName}](#${propertySchema.slug})`,
             (propValues.get(ESchemaAttribute.TYPE) || this.emptyAttribute).value,
             (dependentValues.get(ESchemaAttribute.PSEUDO_IS_REQUIRED) || this.emptyAttribute).value,
             (propValues.get(ESchemaAttribute.PSEUDO_IS_NULLABLE) || this.emptyAttribute).value
@@ -87,8 +87,12 @@ export class PropertyFormatter extends Formatter implements IPropertyFormatter {
     const result = new Array<string>();
     schema.properties.forEach((propertySchema: Schema, propertyName: string) => {
 
-      result.push(`### ${propertyName}: ${propertySchema.property(ESchemaAttribute.TITLE) as string || 'untitled'}`);
+      result.push(`### ${propertyName}`);
+      if (propertySchema.property(ESchemaAttribute.TITLE)) {
+        result.push(propertySchema.property(ESchemaAttribute.TITLE) as string);
+      }
       if (propertySchema.property(ESchemaAttribute.DESCRIPTION)) {
+        result.push('#### Description')
         result.push(propertySchema.property(ESchemaAttribute.DESCRIPTION) as string);
       }
       let propValues = new Array<FormattedAttribute>(

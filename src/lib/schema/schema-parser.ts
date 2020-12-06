@@ -1,3 +1,4 @@
+import BananaSlug from 'github-slugger';
 import * as Collections from 'typescript-collections';
 import { Schema } from "./schema";
 import { ESchemaAttribute } from './schema-attribute.enum';
@@ -20,7 +21,7 @@ export class SchemaParser {
       parsed.forEach(prop => {
         schema.properties.set(
           prop[0],
-          new Schema('dir', 'slug', ESchemaLevel.DEFINITION, JSON.stringify(prop[1])));
+          new Schema('dir', BananaSlug.slug(prop[0]), ESchemaLevel.DEFINITION, JSON.stringify(prop[1])));
       });
     } else {
       console.log('No definitions found');
@@ -34,7 +35,7 @@ export class SchemaParser {
       parsed.forEach(prop => {
         schema.properties.set(
           prop[0],
-          new Schema('dir', 'slug', ESchemaLevel.PROPERTY, JSON.stringify(prop[1])));
+          new Schema('dir', BananaSlug.slug(prop[0]), ESchemaLevel.PROPERTY, JSON.stringify(prop[1])));
       });
     } else {
       console.log('No properties found');
