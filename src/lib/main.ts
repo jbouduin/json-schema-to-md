@@ -9,6 +9,7 @@ import { SchemaFormatter } from './markdown/schema-formatter';
 import { SchemaWriter } from './markdown/schema-writer';
 import { ESchemaAttribute } from './schema/schema-attribute.enum';
 import { ISchemaLoader, SchemaLoader } from './schema/schema-loader';
+import { SchemaParser } from './schema/schema-parser';
 
 export class Main {
 
@@ -18,20 +19,16 @@ export class Main {
     const { argv } = yargs(args)
       .usage('Generate Markdown documentation from JSON Schema.\n\nUsage: $0')
       // the directory containing the schema files
-      .demand('d')
-      .alias('d', 'input')
-      .describe('d', 'path to directory containing all JSON Schemas or a single JSON Schema file. This will be considered as the baseURL. By default only files ending in .schema.json will be processed, unless the schema-extension is set with the -e flag.')
-      .coerce('d', (d: string) => {
+      .demand('i')
+      .alias('i', 'input')
+      .describe('i', 'path to directory containing all JSON Schemas or a single JSON Schema file. This will be considered as the baseURL. By default only files ending in .schema.json will be processed, unless the schema-extension is set with the -e flag.')
+      .coerce('i', (d: string) => {
         const resolved = nodepath.resolve(d);
         if (fs.existsSync(resolved) && fs.lstatSync(d).isDirectory()) {
           return resolved;
         }
-        throw new Error(`Input file "${d}" is not a directory!`);
+        throw new Error(`Input "${d}" is not a directory!`);
       })
-      // process the directory recursively
-      .boolean('r')
-      .alias('r', 'recursive')
-      .describe('r', 'process subdirectories')
       // the output directory
       .alias('o', 'out')
       .describe('o', 'path to output directory')
@@ -41,9 +38,18 @@ export class Main {
       .alias('e', 'schema-extension')
       .describe('e', 'JSON Schema file extension eg. schema.json or json')
       .default('e', 'schema.json')
+      // Flag: process the directory recursively
+      .boolean('r')
+      .alias('r', 'recursive')
+      .describe('r', 'process subdirectories')
+      // Flag: delete output directory contents before writing
+      .boolean('d')
+      .alias('d', 'delete')
+      .describe('d', 'delete the output directory contents before processing the input');
 
-    console.log(argv);
-    const loader = new SchemaLoader(argv.d || '', argv.e || '', argv.r || false) as ISchemaLoader;
+    // console.log(argv);
+
+    const loader = new SchemaLoader(argv.i || '', argv.e || '', argv.r || false) as ISchemaLoader;
     const rawSchemas = loader.load();
 
     rawSchemas.keys().forEach(key => {
@@ -60,16 +66,32 @@ export class Main {
       console.log('slug', value?.slug);
     });
 
-    console.log('=======================================================================');
-    const markDownWriter = new MarkDownWriter(argv.o || '.');
-    new ReadMeWriter(markDownWriter).write(rawSchemas);
-    const schemaWriter = new SchemaWriter(
-      markDownWriter,
-      new SchemaFormatter(),
-      new AttributeFormatter(),
-      new PropertyFormatter()
-    );
-    rawSchemas.values().forEach(schema => schemaWriter.write(schema));
+    if (rawSchemas.keys().length > 0) {
+      if (argv.p) {
+        this.purgeOutputDirectory(argv.o);
+      }
+      const parsedSchemas = new SchemaParser().parseSchemas(rawSchemas);
+      console.log('=======================================================================');
+      const markDownWriter = new MarkDownWriter(argv.o || '.');
+      new ReadMeWriter(markDownWriter).write(parsedSchemas);
+      const schemaWriter = new SchemaWriter(
+        markDownWriter,
+        new SchemaFormatter(),
+        new AttributeFormatter(),
+        new PropertyFormatter()
+      );
+      parsedSchemas.values().forEach(schema => schemaWriter.write(schema));
+    }
   }
   //#endregion
+
+  //#region private methods
+  private purgeOutputDirectory(directory: string | undefined): void {
+    if (directory) {
+      console.log('Deleting directory', directory)
+      fs.rmdirSync(directory, { recursive: true});
+    }
+
+  }
+  ////#endregion
 }
