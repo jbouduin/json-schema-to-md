@@ -69,19 +69,22 @@ export class SchemaWriter implements ISchemaWriter {
   }
 
   private getDefinitions(schema: Schema): Array<string> {
-    const result = new Array<string>();
     if (schema.property(ESchemaAttribute.DEFINITIONS)) {
-      result.push('## Definitions')
+      return new Array<string>(
+        '## Definitions'
+      );
+    } else {
+      return new Array<string>();
     }
-    return result;
   }
 
   private getProperties(schema: Schema): Array<string> {
-    const result = new Array<string>();
     if (schema.property(ESchemaAttribute.PROPERTIES)) {
-      result.push('## Properties');
+      return this.propertyFormatter.format(this.schemaFormatter, this.attributeFormatter, schema);
+    } else {
+      return new Array<string>();
     }
-    return result;
+
   }
   //#endregion
 }

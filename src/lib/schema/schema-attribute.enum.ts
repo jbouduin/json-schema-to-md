@@ -22,4 +22,6 @@ export enum ESchemaAttribute {
   TITLE = 'title',
   TYPE = 'type',
   WRITE_ONLY = 'writeOnly'
+  // TODO maxProperties / minProperties
+  // TODO patternProperties
 }

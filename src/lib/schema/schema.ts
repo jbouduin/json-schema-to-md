@@ -1,5 +1,7 @@
+import { ERestriction } from "./restriction-enum";
 import { ESchemaAttribute } from "./schema-attribute.enum";
 import { ESchemaType } from "./schema-type.enum";
+import { ESchemaLevel } from "./schema-level.enum";
 
 export class Schema {
 
@@ -9,6 +11,7 @@ export class Schema {
   //#endregion
 
   //#region private properties
+  private _level: ESchemaLevel;
   private schemaProperties: Array<[string, unknown]>;
   private processedProperties: Map<string, Schema>;
   private processedDefinitions: Map<string, Schema>;
@@ -25,6 +28,10 @@ export class Schema {
 
   public get isNullable(): boolean {
     return this.type.includes(ESchemaType.NULL);
+  }
+
+  public get level(): ESchemaLevel {
+    return this._level;
   }
 
   public get properties(): Map<string, Schema> {
@@ -56,9 +63,10 @@ export class Schema {
   //#endregion
 
   //#region constructor
-  public constructor(directory: string, slug: string, schemaString: string) {
+  public constructor(directory: string, slug: string, level: ESchemaLevel, schemaString: string) {
     this.directory = directory;
     this.slug = slug;
+    this._level = level;
     this.processedDefinitions = new Map<string, Schema>();
     this.processedProperties = new Map<string, Schema>();
     this.schemaProperties = Object.entries(JSON.parse(schemaString));
@@ -71,7 +79,7 @@ export class Schema {
     return this.required.includes(propertyName);
   }
 
-  public property(name: ESchemaAttribute): unknown {
+  public property(name: ESchemaAttribute | ERestriction): unknown {
     return this.schemaProperties.find(prop => prop[0] === name)?.[1];
   }
   //#endregion

@@ -1,4 +1,5 @@
 import { Schema } from "./schema";
+import { ESchemaLevel } from "./schema-level.enum";
 
 describe.each([
   ['{}', true],
@@ -6,7 +7,7 @@ describe.each([
 ])('Abstract vs. non abstract', (schemaString: string, abstract: boolean) => {
   const dir = 'dir';
   const slug = 'slug';
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
 
   test('directory set', () => expect(schema.directory).toEqual(dir));
   test('slug set', () => expect(schema.slug).toEqual(slug));
@@ -19,7 +20,7 @@ describe.each([
   ['{ "required": [ "a" ] }', 1],
   ['{ "required": [ "a", "b" ] }', 2]
 ])('required', (schemaString: string, length: number) => {
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
   test('length of array', () => expect(schema.required.length).toEqual(length));
   if (schema.required.length === 1) {
     test('first element', () => expect(schema.required[0]).toEqual('a'));
@@ -35,7 +36,7 @@ describe.each([
   ['{ "properties": { "a": { "a": "value" } }, "required": [ "a" ] }', true],
   ['{ "properties": { "a": { "a": "value" } }, "required": [ "a", "b" ] }', true]
 ])('is property required', (schemaString: string, expected: boolean) => {
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
   test('result', () => expect(schema.isRequired("a")).toEqual(expected));
 });
 
@@ -46,7 +47,7 @@ describe.each([
   ['{ "properties": null }'],
   ['{ "properties": {} }']
 ])('definitions and properties', (schemaString: string) => {
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
   test('definitions instantiated', () => expect(schema.definitions).toBeDefined());
   test('properties instantiated', () => expect(schema.properties).toBeDefined());
 });
@@ -59,7 +60,7 @@ describe.each([
   ['{ "type": [ "string" ] }', 1, ['string']],
   ['{ "type": [ "string", "null" ] }', 2, ['string', 'null']]
 ])('type as array', (schemaString: string, length: number, values: Array<string>) => {
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
   test('length of array', () => expect(schema.type.length).toEqual(length));
   values.forEach((value: string, index: number) =>
     test(`value @${index}`, () => expect(schema.type[index]).toEqual(value))
@@ -75,7 +76,7 @@ describe.each([
   ['{ "type": [ "true" ] }', false],
   ['{ "type": [ "string", "null" ] }', true]
 ])('isNullable', (schemaString: string, expected: boolean) => {
-  const schema = new Schema('dir', 'slug', schemaString);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, schemaString);
   test('value', () => expect(schema.isNullable).toEqual(expected));
 });
 
@@ -89,7 +90,7 @@ describe.each([
   [5, false],
   ['other', false]
 ])('type validation', (value: string | number, valid: boolean) => {
-  const schema = new Schema('dir', 'slug', `{ "type": "${value}" }`);
+  const schema = new Schema('dir', 'slug', ESchemaLevel.ROOT, `{ "type": "${value}" }`);
   test('length of array', () => expect(schema.type.length).toEqual(1));
   if (valid) {
     test('validity check succeeded', () => expect(schema.type[0]).toEqual(value));

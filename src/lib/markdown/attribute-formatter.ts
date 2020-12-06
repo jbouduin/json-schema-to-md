@@ -1,11 +1,13 @@
 import { Schema } from 'src/lib/schema/schema';
 import { ESchemaAttribute } from '../schema/schema-attribute.enum';
+import { ESchemaType } from '../schema/schema-type.enum';
+import { FormattedAttribute } from './formatted-attribute';
 import { Formatter } from './formatter';
 
 export interface IAttributeFormatter {
   getAttributesAsList(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Array<string>;
   getAttributeValuesAsHorizontalTable(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Array<string>;
-  getAttributeValues(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<string, string>;
+  getAttributeValues(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<ESchemaAttribute, FormattedAttribute>;
   getBooleanAttributeText(value?: boolean): string;
   getParentDependentPropertyAttributeValuesAsList(
     schema: Schema,
@@ -14,7 +16,7 @@ export interface IAttributeFormatter {
   getParentDependentPropertyAttributeValues(
     schema: Schema,
     propertyName: string,
-    attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<string, string>;
+    attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<ESchemaAttribute, FormattedAttribute>;
 }
 
 export class AttributeFormatter extends Formatter implements IAttributeFormatter {
@@ -22,9 +24,8 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
   //#region public methods
   public getAttributesAsList(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Array<string> {
     const result = new Array<string>();
-    this.getAttributeValues(schema, attributes).forEach((value: string, key: string) => {
-      result.push(`- **${key}**: ${value}`)
-    });
+    this.getAttributeValues(schema, attributes)
+      .forEach((value: FormattedAttribute) => result.push(this.buildListItem(value)));
     return result;
   }
 
@@ -33,14 +34,13 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
     propertyName: string,
     attributes: ESchemaAttribute | Array<ESchemaAttribute>): Array<string> {
     const result = new Array<string>();
-    this.getParentDependentPropertyAttributeValues(schema, propertyName, attributes).forEach((value: string, key: string) => {
-      result.push(`- **${key}**: ${value}`)
-    });
+    this.getParentDependentPropertyAttributeValues(schema, propertyName, attributes)
+      .forEach((value: FormattedAttribute) => result.push(this.buildListItem(value)));
     return result;
   }
 
-  public getAttributeValues(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<string, string> {
-    const result = new Map<string, string>();
+  public getAttributeValues(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<ESchemaAttribute, FormattedAttribute> {
+    const result = new Map<ESchemaAttribute, FormattedAttribute>();
 
     let toUse: Array<ESchemaAttribute>;
     if (!Array.isArray(attributes)) {
@@ -99,6 +99,11 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
           stringValue = this.getStatusAttributeText(value);
           break;
         }
+        case ESchemaAttribute.TYPE: {
+          label = 'Type';
+          stringValue = schema.type.filter(tp => tp != ESchemaType.NULL).map(tp => `\`${tp}\``).join(' ');
+          break;
+        }
         case ESchemaAttribute.WRITE_ONLY: {
           label = 'Write-only';
           const value = schema.property(ESchemaAttribute.WRITE_ONLY) as boolean;
@@ -109,25 +114,25 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
           throw `${prop} not supported`;
         }
       }
-      result.set(label, stringValue);
+      result.set(prop, new FormattedAttribute(label, stringValue));
     });
     return result;
   }
 
   public getAttributeValuesAsHorizontalTable(schema: Schema, attributes: ESchemaAttribute | Array<ESchemaAttribute>): Array<string> {
-    const values = this.getAttributeValues(schema, attributes);
+    const values = new Array<FormattedAttribute>(...this.getAttributeValues(schema, attributes).values());
     return new Array<string>(
-      this.buildTableRow([...values.keys()]),
-      this.buildTableRow([...values.keys()].map(() => '---')),
-      this.buildTableRow([...values.values()])
+      this.buildTableRow(values.map((value: FormattedAttribute) => value.label)),
+      this.buildTableRow(values.map(() => '---')),
+      this.buildTableRow(values.map((value: FormattedAttribute) => value.value))
     );
   }
 
   public getParentDependentPropertyAttributeValues(
     schema: Schema,
     propertyName: string,
-    attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<string, string> {
-    const result = new Map<string, string>();
+    attributes: ESchemaAttribute | Array<ESchemaAttribute>): Map<ESchemaAttribute, FormattedAttribute> {
+    const result = new Map<ESchemaAttribute, FormattedAttribute>();
 
     let toUse: Array<ESchemaAttribute>;
     if (!Array.isArray(attributes)) {
@@ -142,7 +147,6 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
       switch (prop) {
         case ESchemaAttribute.PSEUDO_IS_REQUIRED: {
           label = 'Required';
-          console.log(schema.property(ESchemaAttribute.REQUIRED), schema.required, schema.isRequired(propertyName));
           stringValue = this.getBooleanAttributeText(schema.isRequired(propertyName));
           break;
         }
@@ -150,7 +154,7 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
           throw `${prop} not supported`;
         }
       }
-      result.set(label, stringValue);
+      result.set(prop, new FormattedAttribute(label, stringValue));
     });
 
     return result;
@@ -208,7 +212,6 @@ export class AttributeFormatter extends Formatter implements IAttributeFormatter
       }
     }
   }
-
 
   //#endregion
 }

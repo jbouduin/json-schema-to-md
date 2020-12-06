@@ -2,4 +2,5 @@ coverage
 dist
 node_modules
 out
-*.do-not-commit.ts
+*.do-not-commit.*
+fixtures

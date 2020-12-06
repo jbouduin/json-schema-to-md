@@ -1,5 +1,6 @@
 import { Schema } from "../schema/schema";
 import { ESchemaAttribute } from "../schema/schema-attribute.enum";
+import { ESchemaLevel } from "../schema/schema-level.enum";
 
 export interface ISchemaFormatter {
   getDefault(schema: Schema): Array<string>;
@@ -12,7 +13,7 @@ export class SchemaFormatter implements ISchemaFormatter {
 
     if (schema.property(ESchemaAttribute.DEFAULT) || typeof schema.property(ESchemaAttribute.DEFAULT) === 'string') {
       return new Array<string>(
-        '## Default',
+        `${schema.level === ESchemaLevel.ROOT ? '##' : '####'} Default`,
         '```json',
         JSON.stringify(schema.property(ESchemaAttribute.DEFAULT), undefined, 2),
         '```',
@@ -33,7 +34,7 @@ export class SchemaFormatter implements ISchemaFormatter {
             '```'
           ]);
         return new Array<string>(
-          '## Examples',
+          `${schema.level === ESchemaLevel.ROOT ? '##' : '####'}  Examples`,
           ...(new Array<string>().concat(...processed))
         );
       } else {
