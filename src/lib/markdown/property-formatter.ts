@@ -69,7 +69,7 @@ export class PropertyFormatter extends Formatter implements IPropertyFormatter {
       } else {
         result.push(
           this.buildTableRow([
-            propertyName,
+            `[${propertyName}](#${propertySchema.slug})`,
             (propValues.get(ESchemaAttribute.TYPE) || this.emptyAttribute).value,
             (propValues.get(ESchemaAttribute.PSEUDO_IS_NULLABLE) || this.emptyAttribute).value
           ])
