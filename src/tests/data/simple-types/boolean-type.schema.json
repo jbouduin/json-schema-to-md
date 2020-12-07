@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/tests/data/simpletypes/boolean-type",
+  "title": "Boolean Type",
+  "type": "object",
+  "description": "This is a schema with a single boolean, non-required property.",
+  "properties": {
+    "yesno": {
+      "type": "boolean",
+      "title": "Boolean",
+      "description": "We called it yesno, so noobs do understand what kind of value this property can contain."
+    }
+  }
+}

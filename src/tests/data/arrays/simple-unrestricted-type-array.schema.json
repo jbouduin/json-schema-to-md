@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas//tests/data/arrays/simple-unrestricted-type-array.schema",
+  "title": "Arrays of integers",
+  "type": "object",
+  "description": "This is a schema with arrays containing arrays of simple and unrestricted types.",
+  "properties": {
+    "integer": {
+      "title": "Array of integers",
+      "description": "This is an array with restrictions containing unrestricted integers",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "additionalItems": false,
+      "items": {
+        "type": "integer"
+      }
+    },
+    "string": {
+      "title": "Array of strings",
+      "description": "This is an array with restrictions containing unrestricted strings",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "additionalItems": false,
+      "items": {
+        "type": "string"
+      }
+    },
+    "string_integer": {
+      "title": "Array of integers and strings",
+      "description": "This is an array with restrictions containing unrestricted strings and integers",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "additionalItems": false,
+      "items": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  }
+}

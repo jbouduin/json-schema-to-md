@@ -23,10 +23,11 @@ export class MarkDownWriter implements IMarkDownWriter {
     const outputDir = path.dirname(fullPath);
 
     if (!fs.existsSync(outputDir)) {
-      console.log('creating ', outputDir);
+      console.log('creating directory', outputDir);
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
+    console.log('writing markdown file', fullPath);
     fs.writeFile(
       fullPath,
       markDown.join('\r\n'),

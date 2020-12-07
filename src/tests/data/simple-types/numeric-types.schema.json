@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/tests/data/simpletypes/numeric-types",
+  "title": "Numeric Types",
+  "type": "object",
+  "description": "This is an example schema with all properties of a numeric type string and all possible constraints. The unconstrained integer and number are the required properties",
+  "properties": {
+    "number_unconstrained": {
+      "type": "number",
+      "title": "Unconstrained number",
+      "description": "Just a number"
+    },
+    "integer_unconstrained": {
+      "type": "integer",
+      "title": "Integer",
+      "description": "Just a whole number. Fractions are useless."
+    },
+    "integer_constrained": {
+      "type": "integer",
+      "title": "Constrained integer",
+      "description": "To be considered adult",
+      "minimum": 18
+    },
+    "number_constrained": {
+      "type": "number",
+      "title": "A Constrained number excluding the limits",
+      "description": "The 20th century is from - to",
+      "exclusiveMaximum": 2000,
+      "exclusiveMinimum": 1899
+    },
+    "integer_leap": {
+      "type":"integer",
+      "title": "Multiple of constraint",
+      "description": "Leap years of the 20th century",
+      "multipleOf": 5,
+      "exclusiveMinimum": 1900,
+      "exclusiveMaximum": 2000,
+      "maximum": 4
+    }
+  },
+  "required": [
+    "integer_unconstrained",
+    "number_unconstrained"
+  ]
+}
